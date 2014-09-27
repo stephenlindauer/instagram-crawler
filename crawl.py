@@ -61,7 +61,7 @@ def callback(ch, method, properties, body):
             follower_count += 1
 
         while next_url:
-            time.sleep(1)
+            time.sleep(.5)
             sys.stdout.write('.')
             follows, next_url = api.user_follows(with_next_url=next_url)
             for user in follows:
@@ -78,7 +78,7 @@ def callback(ch, method, properties, body):
             followed_by_count += 1
 
         while next_url:
-            time.sleep(1)
+            time.sleep(.5)
             sys.stdout.write('.')
             follows, next_url = api.user_followed_by(with_next_url=next_url)
             for user in follows:
