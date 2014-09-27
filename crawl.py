@@ -3,7 +3,7 @@ import django
 import pika
 import json
 import sys
-
+import time
 
 from instagram.client import InstagramAPI
 
@@ -19,7 +19,8 @@ channel = connection.channel()
 
 channel.queue_declare(queue='crawl_account')
 
-api = InstagramAPI(client_id='fe5e81e9fdd142b7bbd031e118c9fc35', client_secret='9e5dc8ee56ff46ae975072934483fdc8') 
+# api = InstagramAPI(client_id='fe5e81e9fdd142b7bbd031e118c9fc35', client_secret='9e5dc8ee56ff46ae975072934483fdc8')  # stephenlindauer
+api = InstagramAPI(client_id='1e7fdb33000d4cfcb9631837dc50b9a5', client_secret='1cf6b7805c5e40a29535385ff557cc54')  # sdlyr8
 
 
 def process_user(user):
@@ -60,6 +61,7 @@ def callback(ch, method, properties, body):
             follower_count += 1
 
         while next_url:
+            time.sleep(1)
             sys.stdout.write('.')
             follows, next_url = api.user_follows(with_next_url=next_url)
             for user in follows:
@@ -76,6 +78,7 @@ def callback(ch, method, properties, body):
             followed_by_count += 1
 
         while next_url:
+            time.sleep(1)
             sys.stdout.write('.')
             follows, next_url = api.user_followed_by(with_next_url=next_url)
             for user in follows:
