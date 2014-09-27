@@ -8,7 +8,8 @@ class Account(models.Model):
         ('pending', 'Pending'),
         ('queued', 'Queued'),
         ('done', 'Done'),
-        ('failed', 'Failed')
+        ('failed', 'Failed'),
+        ('ignored', 'Ignored')
     )
 
     username = models.CharField(max_length=100)

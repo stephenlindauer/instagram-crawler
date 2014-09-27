@@ -27,9 +27,14 @@ def process_user(user):
         new_account.bio = user.bio
         new_account.save()
 
-        channel.basic_publish(exchange='',
-                  routing_key='crawl_account',
-                  body=json.dumps({'id':new_account.pk}))
+        if 'denver' in user.bio.lower():
+            channel.basic_publish(exchange='',
+                      routing_key='crawl_account',
+                      body=json.dumps({'id':new_account.pk}))
+        
+        else:
+            new_account.status='ignored'
+            new_account.save()
 
 
 def callback(ch, method, properties, body):
