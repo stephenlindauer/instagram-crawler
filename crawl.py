@@ -44,56 +44,60 @@ def process_user(user):
 def callback(ch, method, properties, body):
     print " [x] Received %r" % (body,)
 
-    data = json.loads(body)
-
-    account = Account.objects.get(pk=data['id'])
-    account.status='queued'
-    account.save()
-
-    print "Crawl ", account.username
-
-    follower_count = 0
-    followed_by_count = 0
     try:
-        follows, next_url = api.user_follows(user_id=account.account_id)
-        for user in follows:
-            process_user(user)
-            follower_count += 1
 
-        while next_url:
-            time.sleep(1)
-            sys.stdout.write('.')
-            follows, next_url = api.user_follows(with_next_url=next_url)
+        data = json.loads(body)
+
+        account = Account.objects.get(pk=data['id'])
+        account.status='queued'
+        account.save()
+
+        print "Crawl ", account.username
+
+        follower_count = 0
+        followed_by_count = 0
+        try:
+            follows, next_url = api.user_follows(user_id=account.account_id)
             for user in follows:
                 process_user(user)
                 follower_count += 1
-    except Exception, e:
-        print "<WARN> ", e
+
+            while next_url:
+                time.sleep(1)
+                sys.stdout.write('.')
+                follows, next_url = api.user_follows(with_next_url=next_url)
+                for user in follows:
+                    process_user(user)
+                    follower_count += 1
+        except Exception, e:
+            print "<WARN> ", e
 
 
-    try:
-        follows, next_url = api.user_followed_by(user_id=account.account_id)
-        for user in follows:
-            process_user(user)
-            followed_by_count += 1
-
-        while next_url:
-            time.sleep(1)
-            sys.stdout.write('.')
-            follows, next_url = api.user_followed_by(with_next_url=next_url)
+        try:
+            follows, next_url = api.user_followed_by(user_id=account.account_id)
             for user in follows:
                 process_user(user)
                 followed_by_count += 1
+
+            while next_url:
+                time.sleep(1)
+                sys.stdout.write('.')
+                follows, next_url = api.user_followed_by(with_next_url=next_url)
+                for user in follows:
+                    process_user(user)
+                    followed_by_count += 1
+        except Exception, e:
+            print "<WARN> ", e
+
+        account.follower_count = follower_count
+        account.followed_by_count = followed_by_count
+        account.status='done'
+        account.save()
+
+        print "done"
+
     except Exception, e:
-        print "<WARN> ", e
-
-    account.follower_count = follower_count
-    account.followed_by_count = followed_by_count
-    account.status='done'
-    account.save()
-
-    print "done"
-
+        print "<ERROR> ", e
 
 
 channel.basic_consume(callback,
