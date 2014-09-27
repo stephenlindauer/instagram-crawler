@@ -30,7 +30,7 @@ def process_user(user):
         new_account.bio = user.bio
         new_account.save()
 
-        if 'lawrence' in user.bio.lower() or ' ku ' in user.bio.lower() or 'jayhawk' in user.bio.lower() or 'denver' in user.bio.lower():
+        if 'lawrence' in user.bio.lower() or ' ku ' in user.bio.lower() or 'jayhawk' in user.bio.lower() or 'denver' in user.bio.lower() or 'boulder' in user.bio.lower():
             channel.basic_publish(exchange='',
                       routing_key='crawl_account',
                       body=json.dumps({'id':new_account.pk}))
