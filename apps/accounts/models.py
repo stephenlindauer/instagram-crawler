@@ -12,7 +12,7 @@ class Account(models.Model):
         ('ignored', 'Ignored')
     )
 
-    username = models.CharField(max_length=100)
+    username = models.CharField(max_length=100, unique=True)
     account_id = models.IntegerField()
     status = models.CharField(max_length=20, choices=STATUSES, default='pending')
     bio = models.CharField(max_length=5000, default='', blank=True, null=False)
