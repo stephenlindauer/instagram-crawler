@@ -2,6 +2,8 @@ import os
 import django
 import pika
 import json
+from django.db.models import Q
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "crawler.settings")
 django.setup()
@@ -14,7 +16,7 @@ channel = connection.channel()
 
 channel.queue_declare(queue='crawl_account')
 
-pk=Account.objects.filter(status='pending', bio__icontains='lawrence')[0].pk
+pk=Account.objects.filter(status='pending').filter(Q(bio__icontains='lawrence') | Q(bio__icontains='denver'))[0].pk
 # pk = 285044 # nightlifeltown
 
 channel.basic_publish(exchange='',
