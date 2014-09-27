@@ -2,6 +2,9 @@ import os
 import django
 import pika
 import json
+import sys
+
+
 from instagram.client import InstagramAPI
 
 
@@ -27,7 +30,7 @@ def process_user(user):
         new_account.bio = user.bio
         new_account.save()
 
-        if 'denver' in user.bio.lower():
+        if 'lawrence' in user.bio.lower() or ' ku ' in user.bio.lower() or 'jayhawk' in user.bio.lower():
             channel.basic_publish(exchange='',
                       routing_key='crawl_account',
                       body=json.dumps({'id':new_account.pk}))
@@ -43,6 +46,9 @@ def callback(ch, method, properties, body):
     data = json.loads(body)
 
     account = Account.objects.get(pk=data['id'])
+    account.status='queued'
+    account.save()
+
     print "Crawl ", account.username
 
     follower_count = 0
@@ -54,6 +60,7 @@ def callback(ch, method, properties, body):
             follower_count += 1
 
         while next_url:
+            sys.stdout.write('.')
             follows, next_url = api.user_follows(with_next_url=next_url)
             for user in follows:
                 process_user(user)
@@ -69,6 +76,7 @@ def callback(ch, method, properties, body):
             followed_by_count += 1
 
         while next_url:
+            sys.stdout.write('.')
             follows, next_url = api.user_followed_by(with_next_url=next_url)
             for user in follows:
                 process_user(user)
@@ -81,6 +89,7 @@ def callback(ch, method, properties, body):
     account.status='done'
     account.save()
 
+    print "done"
 
 
 
