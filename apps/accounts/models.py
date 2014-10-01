@@ -18,3 +18,4 @@ class Account(models.Model):
     bio = models.CharField(max_length=5000, default='', blank=True, null=False)
     follower_count = models.IntegerField(default=0)
     followed_by_count = models.IntegerField(default=0)
+    avatar_url = models.CharField(max_length=500, blank=True, null=True)

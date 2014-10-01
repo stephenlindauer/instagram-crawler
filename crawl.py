@@ -25,9 +25,13 @@ api = InstagramAPI(client_id='1e7fdb33000d4cfcb9631837dc50b9a5', client_secret='
 
 def process_user(user):
     try:
-        Account.objects.get(username=user.username)
+        account = Account.objects.get(username=user.username)
+        account.avatar_url = user.profile_picture
+        account.bio = user.bio
+        account.save()
     except:
         new_account = Account.objects.create(username=user.username, account_id=user.id)
+        new_account.avatar_url = user.profile_picture
         new_account.bio = user.bio
         new_account.save()
 
