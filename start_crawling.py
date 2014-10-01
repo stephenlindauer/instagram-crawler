@@ -16,12 +16,20 @@ channel = connection.channel()
 
 channel.queue_declare(queue='crawl_account')
 
-pk=Account.objects.filter(status='pending').filter(Q(bio__icontains='lawrence') | Q(bio__icontains='denver'))[0].pk
+accounts = Account.objects.filter(status='pending').filter(Q(bio__icontains='lawrence') | Q(bio__icontains='denver'))
 # pk = 285044 # nightlifeltown
 
 channel.basic_publish(exchange='',
                       routing_key='crawl_account',
-                      body=json.dumps({'id':pk}))
+                      body=json.dumps({'id':accounts[0].pk}))
+
+channel.basic_publish(exchange='',
+                      routing_key='crawl_account',
+                      body=json.dumps({'id':accounts[1].pk}))
+
+channel.basic_publish(exchange='',
+                      routing_key='crawl_account',
+                      body=json.dumps({'id':accounts[2].pk}))
 
 print "Good luck..."
 
