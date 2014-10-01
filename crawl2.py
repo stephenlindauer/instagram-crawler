@@ -19,19 +19,15 @@ channel = connection.channel()
 
 channel.queue_declare(queue='crawl_account')
 
-api = InstagramAPI(client_id='fe5e81e9fdd142b7bbd031e118c9fc35', client_secret='9e5dc8ee56ff46ae975072934483fdc8')  # stephenlindauer
-# api = InstagramAPI(client_id='1e7fdb33000d4cfcb9631837dc50b9a5', client_secret='1cf6b7805c5e40a29535385ff557cc54')  # sdlyr8
+# api = InstagramAPI(client_id='fe5e81e9fdd142b7bbd031e118c9fc35', client_secret='9e5dc8ee56ff46ae975072934483fdc8')  # stephenlindauer
+api = InstagramAPI(client_id='1e7fdb33000d4cfcb9631837dc50b9a5', client_secret='1cf6b7805c5e40a29535385ff557cc54')  # sdlyr8
 
 
 def process_user(user):
     try:
-        account = Account.objects.get(username=user.username)
-        account.avatar_url = user.profile_picture
-        account.bio = user.bio
-        account.save()
+        Account.objects.get(username=user.username)
     except:
         new_account = Account.objects.create(username=user.username, account_id=user.id)
-        new_account.avatar_url = user.profile_picture
         new_account.bio = user.bio
         new_account.save()
 
