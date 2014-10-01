@@ -73,9 +73,9 @@ def callback(ch, method, properties, body):
                 for user in follows:
                     process_user(user)
                     follower_count += 1
+
         except Exception, e:
             print "<WARN> ", e
-
 
         try:
             follows, next_url = api.user_followed_by(user_id=account.account_id)
@@ -84,12 +84,13 @@ def callback(ch, method, properties, body):
                 followed_by_count += 1
 
             while next_url:
-                time.sleep(1)
+                time.sleep(.5)
                 sys.stdout.write('.')
                 follows, next_url = api.user_followed_by(with_next_url=next_url)
                 for user in follows:
                     process_user(user)
                     followed_by_count += 1
+
         except Exception, e:
             print "<WARN> ", e
 
