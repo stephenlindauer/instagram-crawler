@@ -13,7 +13,10 @@ def home(request):
 def search(request):
     search_string = request.GET.get("q")
 
-    page = 0
+    page = int(request.GET.get("p", 0))
+
+    start = page * 20
+    end = start + 20
 
     terms = search_string.split(",")
     query = Account.objects
@@ -25,7 +28,7 @@ def search(request):
         accounts.append(account.serialize())
 
     data = {
-        "results":accounts[:20],
+        "results":accounts[start:end],
         "meta":{
             "page":page,
             "count":len(accounts)

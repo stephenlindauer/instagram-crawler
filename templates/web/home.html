@@ -36,6 +36,10 @@ body {
     color: #999;
 }
 
+#search-results {
+    margin-bottom:100px;
+}
+
 .account-row {
     margin-bottom:10px;
     clear:left;
@@ -76,6 +80,18 @@ body {
     margin-bottom:20px;
 }
 
+#next-page-button {
+    padding:14px;
+    font-size:18px;
+    display:block;
+    width:50%;
+    max-width:400px;
+    text-align: center;
+    margin: 0 auto;
+    border: 1px solid #CCC;
+    border-radius: 8px;
+}
+
 </style>
 </head>
 <body>
@@ -102,44 +118,74 @@ $(function() {
 
     $("#search-form").on("submit", function() {
         $("#search-results").html("Loading...");
-        $.ajax({
-            url:"/s?q=" + $("#search-textfield").val(),
-            dataType: "json",
-            success:function(data) {
-                $("#search-results").html("");
+        _page = 0;
+        fetchResults(0);
 
-                // Animate moving search bar to top of page
-                $("#search-container").animate({
-                    marginTop:0
-                });
-
-                $("#search-results").append("<div id='result-meta'>Showing " + data["results"].length + " of " + data["meta"]["count"] + ".</div>");
-
-                for (var i=0; i<data["results"].length; i++) {
-                    account = data["results"][i];
-
-                    var elId = "account" + account.account_id;
-                    $("#search-results").append("<div class='account-row' id='"+elId+"'></div>");
-                    $("#"+elId).append("<img class='account-avatar' onerror='this.src=\"http://www.fm-base.co.uk/forum/attachments/football-manager-2014-manager-stories/618828d1403554937-ups-downs-building-one-default_original_profile_pic.png\"' src='" + account.avatar_url + "' />");
-                    $("#"+elId).append("<div class='account-info'><span>" + account.follower_count + "</span><br />following</div>");
-                    $("#"+elId).append("<div class='account-info'><span>" + account.followed_by_count + "</span><br />followers</div>");
-                    $("#"+elId).append("<div class='account-username'><a href='http://instagram.com/" + account.username + "'>" + account.username + "</a></div>");
-                    
-                    $("#"+elId).append("<div class='account-bio'>" + account.bio + "</div>");                                        
-
-                }
-            },
-            error:function(a,b,c) {
-                console.log(a);
-                console.log(b);
-                console.log(c);
-                alert("Error");
-            }
-        })
         return false;
     });
 
 });
+
+var _page = 0;
+var _accounts = [];
+
+function fetchResults(page) {
+    $.ajax({
+        url:"/s?p=" + page + "&q=" + $("#search-textfield").val(),
+        dataType: "json",
+        success:function(data) {
+
+            // Animate moving search bar to top of page
+            $("#search-container").animate({
+                marginTop:0
+            });
+
+            meta_html = "Showing " + (_accounts.length + data["results"].length) + " of " + data["meta"]["count"] + ".";
+            if (_page == 0) {
+                $("#search-results").html("");
+                $("#search-results").append("<div id='result-meta'>"+meta_html+"</div>");
+            }
+            else {
+                $("#result-meta").html(meta_html);
+
+                // Scroll
+                $("html, body").animate({ scrollTop: $(window).scrollTop() + 500 + "px" });
+            }
+
+            for (var i=0; i<data["results"].length; i++) {
+                account = data["results"][i];
+
+                _accounts.push(account);
+
+                var elId = "account" + account.account_id;
+                $("#search-results").append("<div class='account-row' id='"+elId+"'></div>");
+                $("#"+elId).append("<img class='account-avatar' onerror='this.src=\"http://www.fm-base.co.uk/forum/attachments/football-manager-2014-manager-stories/618828d1403554937-ups-downs-building-one-default_original_profile_pic.png\"' src='" + account.avatar_url + "' />");
+                $("#"+elId).append("<div class='account-info'><span>" + account.follower_count + "</span><br />following</div>");
+                $("#"+elId).append("<div class='account-info'><span>" + account.followed_by_count + "</span><br />followers</div>");
+                $("#"+elId).append("<div class='account-username'><a href='http://instagram.com/" + account.username + "'>" + account.username + "</a></div>");
+                
+                $("#"+elId).append("<div class='account-bio'>" + account.bio + "</div>");
+            }
+
+            $("#search-results").append("<a href='javascript:;' id='next-page-button'>More Results</a>");
+            $("#next-page-button").on("click", function() {
+                loadNextPage();
+            });
+        },
+        error:function(a,b,c) {
+            console.log(a);
+            console.log(b);
+            console.log(c);
+            alert("Error");
+        }
+    });
+}
+
+function loadNextPage() {
+    _page += 1;
+    $("#next-page-button").remove();
+    fetchResults(_page);
+}
 
 </script>
 </body>
