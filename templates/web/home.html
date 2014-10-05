@@ -1,0 +1,114 @@
+<html>
+<head>
+<style>
+
+body {
+    font-family: HelveticaNeue;
+
+}
+
+#search-container {
+    margin-top:20%;
+    text-align: center;
+}
+
+#search-container h1 {
+    font-weight: 200;
+    font-size:50px;
+}
+
+#search-textfield {
+    padding:8px;
+    font-size:18px;
+    width:50%;
+    min-width:300px;
+    max-width:600px;
+    border-radius: 8px;
+    border:1px solid #CCC;
+}
+
+#search-help-text {
+    font-size:14px;
+    color: #999;
+}
+
+.account-row {
+    margin-bottom:10px;
+    clear:left;
+    height:140px;
+}
+
+.account-row .account-avatar {
+    float:left;
+    width:140px;
+    height:140px;
+    margin-right:6px;
+}
+
+.account-row .account-username {
+    font-size:22px;
+    margin:14px 0px;
+}
+</style>
+</head>
+<body>
+
+<div id='search-container'>
+    
+    <h1>Instagram Search</h1>
+    <form id='search-form'>
+    <input type='text' id='search-textfield' placeholder="Search">
+    <div id='search-help-text'>Type your search terms above separated by commas. Enter to search.</div>
+    </form>
+
+</div>
+
+<div id='search-results'></div>
+
+<script src="https://nightlife2-webapp.s3.amazonaws.com/web2.0/js/libs/jquery-1.7.2.min.js"></script>
+
+<script>
+
+$(function() {
+
+    $("#search-textfield").focus();
+
+    $("#search-form").on("submit", function() {
+        $("#search-results").html("Loading...");
+        $.ajax({
+            url:"/s?q=" + $("#search-textfield").val(),
+            dataType: "json",
+            success:function(data) {
+                $("#search-results").html("");
+
+                // Animate moving search bar to top of page
+                $("#search-container").animate({
+                    marginTop:0
+                });
+
+                for (var i=0; i<data.length; i++) {
+                    account = data[i];
+
+                    var elId = "account" + account.account_id;
+                    $("#search-results").append("<div class='account-row' id='"+elId+"'></div>");
+                    $("#"+elId).append("<img class='account-avatar' src='" + account.avatar_url + "' />");
+                    $("#"+elId).append("<div class='account-username'>" + account.username + "</div>");
+                    $("#"+elId).append("<div class='account-bio'>" + account.bio + "</div>");                    
+
+                }
+            },
+            error:function(a,b,c) {
+                console.log(a);
+                console.log(b);
+                console.log(c);
+                alert("Error");
+            }
+        })
+        return false;
+    });
+
+});
+
+</script>
+</body>
+</html>
