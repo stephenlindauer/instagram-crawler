@@ -19,3 +19,13 @@ class Account(models.Model):
     follower_count = models.IntegerField(default=0)
     followed_by_count = models.IntegerField(default=0)
     avatar_url = models.CharField(max_length=500, blank=True, null=True)
+
+    def serialize(self):
+        return {
+            "username":self.username,
+            "account_id":self.account_id,
+            "bio":self.bio,
+            "follower_count":self.follower_count,
+            "followed_by_count":self.followed_by_count,
+            "avatar_url":self.avatar_url
+        }
