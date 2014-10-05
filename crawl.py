@@ -5,6 +5,8 @@ import json
 import sys
 import time
 
+print "Starting crawl.py..."
+
 from instagram.client import InstagramAPI
 
 
@@ -24,25 +26,26 @@ api = InstagramAPI(client_id='fe5e81e9fdd142b7bbd031e118c9fc35', client_secret='
 
 
 def process_user(user):
+    account = None
     try:
         account = Account.objects.get(username=user.username)
         account.avatar_url = user.profile_picture
         account.bio = user.bio
         account.save()
     except:
-        new_account = Account.objects.create(username=user.username, account_id=user.id)
-        new_account.avatar_url = user.profile_picture
-        new_account.bio = user.bio
-        new_account.save()
+        account = Account.objects.create(username=user.username, account_id=user.id)
+        account.avatar_url = user.profile_picture
+        account.bio = user.bio
+        account.save()
 
-        if 'lawrence' in user.bio.lower() or ' ku ' in user.bio.lower() or 'jayhawk' in user.bio.lower() or 'denver' in user.bio.lower() or 'boulder' in user.bio.lower():
-            channel.basic_publish(exchange='',
-                      routing_key='crawl_account',
-                      body=json.dumps({'id':new_account.pk}))
-        
-        else:
-            new_account.status='ignored'
-            new_account.save()
+    if 'colorado' in user.bio.lower() or 'nightlife' in user.bio.lower() or 'denver' in user.bio.lower() or 'boulder' in user.bio.lower():
+        channel.basic_publish(exchange='',
+                  routing_key='crawl_account',
+                  body=json.dumps({'id':account.pk}))
+    
+    else:
+        account.status='ignored'
+        account.save()
 
 
 def callback(ch, method, properties, body):
@@ -74,7 +77,7 @@ def callback(ch, method, properties, body):
                     process_user(user)
                     follower_count += 1
 
-        except Exception, e:
+        except Account.DoesNotExist, e:
             print "<WARN> ", e
 
         try:
