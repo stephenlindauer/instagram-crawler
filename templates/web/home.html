@@ -167,10 +167,12 @@ function fetchResults(page) {
                 $("#"+elId).append("<div class='account-bio'>" + account.bio + "</div>");
             }
 
-            $("#search-results").append("<a href='javascript:;' id='next-page-button'>More Results</a>");
-            $("#next-page-button").on("click", function() {
-                loadNextPage();
-            });
+            if (_accounts.length < data["meta"]["count"]) {
+                $("#search-results").append("<a href='javascript:;' id='next-page-button'>More Results</a>");
+                $("#next-page-button").on("click", function() {
+                    loadNextPage();
+                });
+            }
         },
         error:function(a,b,c) {
             console.log(a);
