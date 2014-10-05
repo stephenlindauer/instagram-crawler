@@ -142,6 +142,7 @@ function fetchResults(page) {
 
             meta_html = "Showing " + (_accounts.length + data["results"].length) + " of " + data["meta"]["count"] + ".";
             if (_page == 0) {
+                _accounts = [];
                 $("#search-results").html("");
                 $("#search-results").append("<div id='result-meta'>"+meta_html+"</div>");
             }
