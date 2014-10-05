@@ -10,6 +10,10 @@ body {
 #search-container {
     margin-top:20%;
     text-align: center;
+    /*position: fixed;
+    top:0;
+    width:100%;
+    background-color:white;*/
 }
 
 #search-container h1 {
@@ -67,6 +71,11 @@ body {
     font-weight: bold;
 }
 
+#result-meta {
+    text-align: right;
+    margin-bottom:20px;
+}
+
 </style>
 </head>
 <body>
@@ -104,8 +113,10 @@ $(function() {
                     marginTop:0
                 });
 
-                for (var i=0; i<data.length; i++) {
-                    account = data[i];
+                $("#search-results").append("<div id='result-meta'>Showing " + data["results"].length + " of " + data["meta"]["count"] + ".</div>");
+
+                for (var i=0; i<data["results"].length; i++) {
+                    account = data["results"][i];
 
                     var elId = "account" + account.account_id;
                     $("#search-results").append("<div class='account-row' id='"+elId+"'></div>");

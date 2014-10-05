@@ -13,6 +13,8 @@ def home(request):
 def search(request):
     search_string = request.GET.get("q")
 
+    page = 0
+
     terms = search_string.split(",")
     query = Account.objects
     for term in terms:
@@ -22,4 +24,12 @@ def search(request):
     for account in query:
         accounts.append(account.serialize())
 
-    return HttpResponse(json.dumps(accounts[:20]))
+    data = {
+        "results":accounts[:20],
+        "meta":{
+            "page":page,
+            "count":len(accounts)
+        }
+    }
+
+    return HttpResponse(json.dumps(data))
