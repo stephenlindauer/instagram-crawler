@@ -25,6 +25,8 @@ api = InstagramAPI(client_id='fe5e81e9fdd142b7bbd031e118c9fc35', client_secret='
 # api = InstagramAPI(client_id='1e7fdb33000d4cfcb9631837dc50b9a5', client_secret='1cf6b7805c5e40a29535385ff557cc54')  # sdlyr8
 
 
+keywords = ["colorado", "nightlife", "denver", "boulder", "st. louis", "stl", "missouri", "314", "303", "chicago"]
+
 def process_user(user):
     account = None
     try:
@@ -38,10 +40,12 @@ def process_user(user):
         account.bio = user.bio
         account.save()
 
-    if 'colorado' in user.bio.lower() or 'nightlife' in user.bio.lower() or 'denver' in user.bio.lower() or 'boulder' in user.bio.lower():
-        channel.basic_publish(exchange='',
-                  routing_key='crawl_account',
-                  body=json.dumps({'id':account.pk}))
+    for keyword in keywords:
+        if keyword in user.bio.lower():
+            channel.basic_publish(exchange='',
+                      routing_key='crawl_account',
+                      body=json.dumps({'id':account.pk}))
+            return
     
     else:
         account.status='ignored'

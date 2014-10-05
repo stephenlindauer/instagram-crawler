@@ -23,26 +23,31 @@ channel.queue_declare(queue='crawl_account')
 api = InstagramAPI(client_id='1e7fdb33000d4cfcb9631837dc50b9a5', client_secret='1cf6b7805c5e40a29535385ff557cc54')  # sdlyr8
 
 
+keywords = ["colorado", "nightlife", "denver", "boulder", "st. louis", "stl", "missouri", "314", "303", "chicago"]
+
 def process_user(user):
+    account = None
     try:
-        Account.objects.get(username=user.username)
+        account = Account.objects.get(username=user.username)
         account.avatar_url = user.profile_picture
         account.bio = user.bio
         account.save()
     except:
-        new_account = Account.objects.create(username=user.username, account_id=user.id)
-        new_account.avatar_url = user.profile_picture
-        new_account.bio = user.bio
-        new_account.save()
+        account = Account.objects.create(username=user.username, account_id=user.id)
+        account.avatar_url = user.profile_picture
+        account.bio = user.bio
+        account.save()
 
-        if 'lawrence' in user.bio.lower() or ' ku ' in user.bio.lower() or 'jayhawk' in user.bio.lower() or 'denver' in user.bio.lower() or 'boulder' in user.bio.lower():
+    for keyword in keywords:
+        if keyword in user.bio.lower():
             channel.basic_publish(exchange='',
                       routing_key='crawl_account',
-                      body=json.dumps({'id':new_account.pk}))
-        
-        else:
-            new_account.status='ignored'
-            new_account.save()
+                      body=json.dumps({'id':account.pk}))
+            return
+    
+    else:
+        account.status='ignored'
+        account.save()
 
 
 def callback(ch, method, properties, body):
