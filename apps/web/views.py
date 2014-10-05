@@ -15,8 +15,8 @@ def search(request):
 
     page = int(request.GET.get("p", 0))
 
-    start = page * 20
-    end = start + 20
+    start = page * 50
+    end = start + 50
 
     terms = search_string.split(",")
     query = Account.objects
