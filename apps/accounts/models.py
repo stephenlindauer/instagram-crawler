@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import post_save
 
 # Create your models here.
 
@@ -29,3 +30,12 @@ class Account(models.Model):
             "followed_by_count":self.followed_by_count,
             "avatar_url":self.avatar_url
         }
+
+
+class Word(models.Model):
+
+    word = models.CharField(max_length=100, unique=True)
+    accounts = models.ManyToManyField(Account, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.word

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.template.response import TemplateResponse
-from apps.accounts.models import Account
+from apps.accounts.models import Account, Word
 
 import json
 
@@ -19,12 +19,28 @@ def search(request):
     end = start + 50
 
     terms = search_string.split(",")
-    query = Account.objects
+    matches = None
     for term in terms:
-        query = query.filter(bio__icontains=term.strip())
+        try:
+            word = Word.objects.get(word=term.strip())
+        except Word.DoesNotExist, e:
+            print "Not found: ", term
+            data = {
+                "results":0,
+                "meta":{
+                    "page":0,
+                    "count":0
+                }
+            }
+            return HttpResponse(json.dumps(data))
+
+        if matches == None:
+            matches = set(word.accounts.all())
+        else:
+            matches = matches.intersection(word.accounts.all())
 
     accounts = []
-    for account in query:
+    for account in matches:
         accounts.append(account.serialize())
 
     data = {
