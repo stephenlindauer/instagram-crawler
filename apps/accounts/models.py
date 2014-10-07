@@ -25,6 +25,7 @@ class Account(models.Model):
     def serialize(self):
         return {
             "username":self.username,
+            "name":self.name,
             "account_id":self.account_id,
             "bio":self.bio,
             "follower_count":self.follower_count,

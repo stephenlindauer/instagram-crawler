@@ -166,7 +166,7 @@ function fetchResults(page) {
                 $("#"+elId).append("<img class='account-avatar' onerror='this.src=\"http://www.fm-base.co.uk/forum/attachments/football-manager-2014-manager-stories/618828d1403554937-ups-downs-building-one-default_original_profile_pic.png\"' src='" + account.avatar_url + "' />");
                 $("#"+elId).append("<div class='account-info'><span>" + account.follower_count + "</span><br />following</div>");
                 $("#"+elId).append("<div class='account-info'><span>" + account.followed_by_count + "</span><br />followers</div>");
-                $("#"+elId).append("<div class='account-username'><a href='http://instagram.com/" + account.username + "'>" + account.username + "</a></div>");
+                $("#"+elId).append("<div class='account-username'><a href='http://instagram.com/" + account.username + "'>" + account.username + "</a> " + account.name + "</div>");
                 
                 $("#"+elId).append("<div class='account-bio'>" + account.bio + "</div>");
             }
