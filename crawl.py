@@ -6,8 +6,6 @@ import sys
 import time
 import re
 
-print "Starting crawl.py..."
-
 from instagram.client import InstagramAPI
 
 
@@ -50,16 +48,17 @@ def process_user(user):
             word.accounts.add(account)
             word.save()
 
-    for keyword in keywords:
-        if keyword in user.bio.lower():
-            channel.basic_publish(exchange='',
-                      routing_key='crawl_account',
-                      body=json.dumps({'id':account.pk}))
-            return
-    
-    else:
-        account.status='ignored'
-        account.save()
+    if account.status != "done":
+        for keyword in keywords:
+            if keyword in user.bio.lower():
+                channel.basic_publish(exchange='',
+                          routing_key='crawl_account',
+                          body=json.dumps({'id':account.pk}))
+                return
+        
+        else:
+            account.status='ignored'
+            account.save()
 
 
 def callback(ch, method, properties, body):
