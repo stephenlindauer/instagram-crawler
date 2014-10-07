@@ -38,6 +38,13 @@ def process_user(user):
         account.bio = user.bio
         account.save()
 
+    # Create words
+    for s in [account.bio, account.username]:
+        for w in re.findall(r'[\w]+', s):
+            word, created = Word.objects.get_or_create(word=w.lower())
+            word.accounts.add(account)
+            word.save()
+
     for keyword in keywords:
         if keyword in user.bio.lower():
             channel.basic_publish(exchange='',
