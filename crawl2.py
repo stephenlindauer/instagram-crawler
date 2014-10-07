@@ -4,6 +4,7 @@ import pika
 import json
 import sys
 import time
+import re
 
 from instagram.client import InstagramAPI
 
@@ -11,7 +12,7 @@ from instagram.client import InstagramAPI
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "crawler.settings")
 django.setup()
 
-from apps.accounts.models import Account
+from apps.accounts.models import Account, Word
 
 
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -23,18 +24,20 @@ channel.queue_declare(queue='crawl_account')
 api = InstagramAPI(client_id='1e7fdb33000d4cfcb9631837dc50b9a5', client_secret='1cf6b7805c5e40a29535385ff557cc54')  # sdlyr8
 
 
-keywords = ["colorado", "nightlife", "denver", "boulder", "st. louis", "stl", "missouri", "314", "303", "chicago"]
+keywords = ["colorado", "nightlife", "denver", "boulder", "st. louis", "stl", "missouri", "314", "303", "chicago", "columbia", "mizzou", "como"]
 
 def process_user(user):
     account = None
     try:
         account = Account.objects.get(username=user.username)
         account.avatar_url = user.profile_picture
+        account.name = user.full_name
         account.bio = user.bio
         account.save()
     except:
         account = Account.objects.create(username=user.username, account_id=user.id)
         account.avatar_url = user.profile_picture
+        account.name = user.full_name
         account.bio = user.bio
         account.save()
 
