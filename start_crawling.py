@@ -16,7 +16,7 @@ channel = connection.channel()
 
 channel.queue_declare(queue='crawl_account')
 
-accounts = Account.objects.filter(status='pending').filter(Q(bio__icontains='lawrence') | Q(bio__icontains='denver'))
+accounts = Account.objects.filter(status='pending') #.filter(Q(bio__icontains='st. louis') | Q(bio__icontains='denver'))
 # pk = 285044 # nightlifeltown
 
 channel.basic_publish(exchange='',
