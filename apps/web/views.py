@@ -4,6 +4,7 @@ from django.template.response import TemplateResponse
 from apps.accounts.models import Account, Word
 
 import json
+import time
 
 # Create your views here.
 def home(request):
@@ -11,6 +12,7 @@ def home(request):
     return TemplateResponse(request, 'web/home.html', {})
 
 def search(request):
+    start_time = time.time()
     search_string = request.GET.get("q")
 
     page = int(request.GET.get("p", 0))
@@ -21,23 +23,17 @@ def search(request):
     terms = search_string.split(",")
     matches = None
     for term in terms:
-        try:
-            word = Word.objects.get(word=term.strip())
-        except Word.DoesNotExist, e:
-            print "Not found: ", term
-            data = {
-                "results":0,
-                "meta":{
-                    "page":0,
-                    "count":0
-                }
-            }
-            return HttpResponse(json.dumps(data))
+        print term
+        term_matches = set()
+        for word in Word.objects.filter(word__contains=term.strip().lower()):
+            for account in word.accounts.all():
+                term_matches.add(account)
 
         if matches == None:
-            matches = set(word.accounts.all())
+            matches = term_matches
         else:
-            matches = matches.intersection(word.accounts.all())
+            matches = matches.intersection(term_matches)
+
 
     accounts = []
     for account in matches:
@@ -47,7 +43,8 @@ def search(request):
         "results":accounts[start:end],
         "meta":{
             "page":page,
-            "count":len(accounts)
+            "count":len(accounts),
+            "time":str(time.time()-start_time)[0:6]
         }
     }
 
