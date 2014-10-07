@@ -14,6 +14,7 @@ class Account(models.Model):
     )
 
     username = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
     account_id = models.IntegerField()
     status = models.CharField(max_length=20, choices=STATUSES, default='pending')
     bio = models.CharField(max_length=5000, default='', blank=True, null=False)

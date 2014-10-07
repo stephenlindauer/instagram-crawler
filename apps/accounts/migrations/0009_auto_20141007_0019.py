@@ -11,9 +11,8 @@ def parse_account_info(apps, schema_editor):
     Account = apps.get_model("accounts", "Account")
     Word = apps.get_model("accounts", "Word")
     i=0
-    accounts = Account.objects.all()
-    num = len(accounts)
-    for account in accounts:
+    num = 7784539
+    for account in Account.objects.all():
         i+=1
         if i%100 == 0:
             print 100.0*i/num
