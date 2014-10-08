@@ -36,7 +36,7 @@ class Account(models.Model):
 
 class Word(models.Model):
 
-    word = models.CharField(max_length=100, unique=True)
+    word = models.CharField(max_length=100, unique=True, db_index=True)
     accounts = models.ManyToManyField(Account, null=True, blank=True)
 
     def __unicode__(self):
