@@ -8,8 +8,8 @@ import time
 
 # Create your views here.
 def home(request):
-
-    return TemplateResponse(request, 'web/home.html', {})
+    
+    return TemplateResponse(request, 'web/home.html', {'accounts':accounts})
 
 def search(request):
     start_time = time.time()
@@ -25,7 +25,7 @@ def search(request):
     for term in terms:
         print term
         term_matches = set()
-        for word in Word.objects.filter(word__contains=term.strip().lower()):
+        for word in Word.objects.filter(word=term.strip().lower()).select_related():
             for account in word.accounts.all():
                 term_matches.add(account)
 
@@ -48,4 +48,5 @@ def search(request):
         }
     }
 
-    return HttpResponse(json.dumps(data))
+    # return TemplateResponse(request, 'web/home.html', data)
+    return HttpResponse(json.dumps(data), content_type="text/html")
